@@ -8,10 +8,13 @@ package in.pleasecome.tohich_hunter.checkin;
 import in.pleasecome.tohich_hunter.checkin.entity.Note;
 import in.pleasecome.tohich_hunter.checkin.entity.Town;
 import in.pleasecome.tohich_hunter.checkin.entity.User;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,13 +38,25 @@ public class MainController
         return new ModelAndView("index");
     }
 
-    @RequestMapping("/mypage")
-    public ModelAndView myPage()
+    @RequestMapping(value = "/mypage*", method = RequestMethod.GET)
+    public ModelAndView myPage(HttpServletRequest request)
     {
-        //blo.saveUser("tony", "montana",13L,1l,2l,3l);
-        //blo.saveConversation(1L,2L);
-        //blo.editUser(1L, "Bill", "Murray", 13L);
-        return new ModelAndView("mypage","command", new Note());
+        int skip = 0;
+        if (request.getParameter("skip") != null)
+        {
+            skip = Integer.valueOf(request.getParameter("skip"));
+        }
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<Note> result = null;
+        try
+        {
+            result = blo.getNotes(username, skip);
+        } catch (Exception e)
+        {
+            Logger.getAnonymousLogger().log(Level.SEVERE, "Failed to load notes", e);
+        }
+
+        return new ModelAndView("mypage", "command", new Note()).addObject("notes", result);
     }
 
     @RequestMapping("/edit")
@@ -100,19 +115,42 @@ public class MainController
         try
         {
             blo.saveUser(usr);
+            return new ModelAndView("login");
         } catch (Exception e)
         {
             Logger.getAnonymousLogger().log(Level.SEVERE, "User register failure", e);
             return new ModelAndView("register").addObject("msg", "User with the same email already exists");
         }
-        return new ModelAndView("login");
+    }
+
+    @RequestMapping(value = "/addNote", method = RequestMethod.POST)
+    public String addNote(@ModelAttribute Note note, HttpServletRequest request)
+    {
+        System.err.println(note);
+        try
+        {
+            blo.addNote(note, request.getRealPath("/resources/usersphotos/"));
+        } catch (Exception e)
+        {
+            Logger.getAnonymousLogger().log(Level.SEVERE, "failed to add this note", e);
+        } finally
+        {
+            return "redirect:mypage";
+        }
     }
 
     @RequestMapping(value = "/getTowns")
     public @ResponseBody
     List<Town> getTowns()
     {
-        return blo.getTowns();
+        try
+        {
+            return blo.getTowns();
+        } catch (Exception ex)
+        {
+            Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new ArrayList<Town>(0);
     }
 
     @Autowired

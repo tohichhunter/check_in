@@ -16,6 +16,7 @@
       <property name="javax.persistence.jdbc.password" value="ilovedicks"/>
       <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>
+      <property name="hibernate.enable_lazy_load_no_trans" value="true" />
     </properties>
   </persistence-unit>
 </persistence>

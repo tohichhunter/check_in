@@ -58,22 +58,31 @@ public class NoteDAOImpl extends HibernateDaoSupport implements NoteDAO
 
     @Override
     @Transactional(readOnly = true)
-    public List<Note> findByUserID(Long id)
+    public List<Note> findByUsername(String id, int skip)
     {
-        List<Long> result = (List<Long>) (Object) getHibernateTemplate().
-                find("select notes from in.pleasecome.tohich_hunter.check_in.entity.User where id = ?",
-                        new Object[]
-                        {
-                            id
-                        });
-        if (result != null)
+        if (skip < 0)
         {
-            List<Note> notes = new LinkedList<>();
-            for (Long noteID : result)
+            throw new IllegalArgumentException();
+        }
+        Query query = getSessionFactory().getCurrentSession().
+                createQuery("FROM in.pleasecome.tohich_hunter.checkin.entity.Note N WHERE N.username = :username");
+        query.setParameter("username", id);
+        query.setMaxResults(skip + 10);
+        if (query.list() != null)
+        {
+            List<Note> result = null;
+            try
             {
-                notes.add(getHibernateTemplate().get(Note.class, noteID));
+                result = new LinkedList<>(query.list().subList(skip, skip + 10));
+            } catch (IndexOutOfBoundsException e)
+            {
+                result = new LinkedList<>(query.list());
             }
-            return notes;
+            if (result != null)
+            {
+                return result;
+            }
+            throw new org.hibernate.QueryParameterException(" " + skip);
         }
         throw new NullPointerException();
     }
@@ -83,9 +92,9 @@ public class NoteDAOImpl extends HibernateDaoSupport implements NoteDAO
     public List<Note> findLastNotes(int numberOfNotes)
     {
         Query query = getSessionFactory().getCurrentSession().
-                createQuery("FROM in.pleasecome.tohich_hunter.check_in.entity.Note ORDER BY timestamp DSC");
+                createQuery("FROM in.pleasecome.tohich_hunter.checkin.entity.Note ORDER BY timestamp DSC");
         query.setMaxResults(numberOfNotes);
-        List<Note> result = new LinkedList<>(query.list());
+        List<Note> result = new LinkedList<>(query.list().subList(0, 10));
         return result;
     }
 }

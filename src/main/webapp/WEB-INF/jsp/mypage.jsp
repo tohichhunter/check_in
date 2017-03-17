@@ -4,6 +4,7 @@
     Author     : toxa
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <!DOCTYPE html>
@@ -24,7 +25,14 @@
                 integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" 
         crossorigin="anonymous"></script>
         <title>User`s page</title>
-
+        <style>
+            #text,#name{
+                width: 100%; border-radius: 3px; color: #3b364c; background-color: #fcf376;
+            }            
+            select.location{
+                color: #2580a8;
+            }
+        </style>
     </head>
     <body >
         <div class="container">
@@ -62,43 +70,56 @@
                 <div>
                     <button id="adb" class="btn btn-primary" onclick="showForm();">Add new note</button>
                 </div>
-                <div id="addNote" >
-                    <form:form id="newNote" >
-                        <table>
-                            <th class="name">
-                                <form:input path="name" type="text" placeholder="Name"/>
-                            </th>
-                            <tr class="text">
-                                <td>
-                                    <form:input path="text" type="text" placeholder="Enter your note" style="height: 100px"/>
-                                </td>
-                            </tr>
-                            <tr class="photos">
-                                <td>
-                                    <input path="photos" type="file" placeholder="Name" multiple="true"/>
-                                </td>
-                            </tr>
-                            <tr class="location">
-                                <td>
-                                    <select id="countrieslist" style="width: 190px" onchange="loadCities(this.value);">
-                                        <option value="" disabled selected>Select country</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr class="location">
-                                <td>
-                                    <form:select id="townlist" path="location" style="width: 190px">
-                                        <form:option value="">Select town</form:option>
-                                    </form:select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input class="btn btn-primary" type="submit" value="submit">
-                                </td>
-                            </tr>
-                        </table>
-                    </form:form>
+                <div id="addNote"   style="border: 2px solid; border-radius: 5px">
+                    <table style="width: 100%">
+                        <tr>
+                            <td>
+                                <form:form id="newNote" action="addNote?${_csrf.parameterName}=${_csrf.token}" method="POST" enctype="multipart/form-data">
+                                    <fieldset>
+                                        <table style="margin-left: 25px; width: 75%">
+                                            <tr><td><br/></td></tr>
+                                            <th class="name">
+                                                <form:input path="name" type="text" placeholder="Name" />
+                                            </th>
+                                            <tr><td><br/></td></tr>
+                                            <tr class="text" >
+                                                <td>
+                                                    <form:textarea path="text" type="textarea" placeholder="Enter your note" style="height: 100px; resize: none;"/>
+                                                </td>
+                                            </tr>
+                                            <tr><td><br/></td></tr>
+                                            <tr class="photos">
+                                                <td>
+                                                    <form:input path="files" type="file" placeholder="Name" multiple="multiple" />
+                                                </td>
+                                            </tr>
+                                            <tr><td><br/></td></tr>
+                                            <tr >
+                                                <td>
+                                                    <select class="location" id="countrieslist" style="width: 190px; " onchange="loadCities(this.value);">
+                                                        <option value="" disabled selected>Select country</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr><td><br/></td></tr>
+                                            <tr >
+                                                <td>
+                                                    <form:select class="location" id="townlist" path="location" style="width: 190px">
+                                                        <form:option value="">Select town</form:option>
+                                                    </form:select>
+                                                </td>
+                                            </tr>
+                                            <tr><td><br/></td></tr>
+                                            <tr>
+                                                <td>
+                                                    <input class="btn btn-primary" type="submit" value="submit">
+                                                </td>
+                                            </tr>
+                                            <tr><td><br/></td></tr>
+                                        </table>
+                                    </fieldset>
+                                </form:form>
+                    </table>
                 </div>
                 <div id = "notesfield">
                     <div class="glyphicon">
@@ -143,6 +164,25 @@
                             </tr>
                         </table>
                     </div>
+
+                    <c:forEach items="${notes}" varStatus="i">
+                        <div class="glyphicon">
+                            <table>
+                                <th class="name">${notes[i.index].name}</th>
+                                <tr class="text">
+                                    <td>${notes[i.index].text}</td>
+                                </tr>
+                                <tr class="photos">
+                                    <c:set var="pics" value="${notes[i.index].photos.toArray()}"/>
+                                    <c:forEach items="${pics}" varStatus="j">
+                                        <td>
+                                            <img src="${pics[j.index]}" height="50px"/>
+                                        </td>
+                                    </c:forEach>
+                                </tr>
+                            </table>
+                        </div>
+                    </c:forEach>
                 </div>
             </div>
 
@@ -159,24 +199,26 @@
         <script src="https://getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script>
         <script src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script>
-                                        $(document).ready(function () {
-                                            hideForm();
-                                            $("#countrieslist").load("resources/html/countries_html.html");
-                                        });
-                                        function loadCities(item) {
-                                            $("#townlist").load("resources/html/" + item + ".html");
-                                        }
-                                        function showForm() {
-                                            $("#addNote").show();
-                                            $("#adb").hide();
-                                            document.getElementById("usr").style.cursor = "pointer";
-                                        }
-                                        function hideForm() {
-                                            $("#adb").show();
-                                            $("#addNote").hide();
-                                            document.getElementById("usr").style.cursor = "default";
-                                        }
+                    $(document).ready(function () {
+                        hideForm();
+                        $("#countrieslist").load("resources/html/countries_html.html");
+                    });
+                    function loadCities(item) {
+                        $("#townlist").load("resources/html/" + item + ".html");
+                    }
+                    function showForm() {
+                        $("#addNote").show();
+                        $("#adb").hide();
+                        $('html, body').animate({
+                            scrollTop: $("#addNote").offset().top
+                        }, 400);
+                        document.getElementById("usr").style.cursor = "pointer";
+                    }
+                    function hideForm() {
+                        $("#adb").show();
+                        $("#addNote").hide();
+                        document.getElementById("usr").style.cursor = "default";
+                    }
         </script>
     </body>
-</body>
 </html>

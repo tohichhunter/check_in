@@ -16,11 +16,16 @@ import in.pleasecome.tohich_hunter.checkin.entity.Note;
 import in.pleasecome.tohich_hunter.checkin.entity.Role;
 import in.pleasecome.tohich_hunter.checkin.entity.Town;
 import in.pleasecome.tohich_hunter.checkin.entity.User;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -29,7 +34,9 @@ import java.util.logging.Logger;
 import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.ConcurrencyFailureException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -48,8 +55,13 @@ public class BLO
     private Conversation conversation;
     private Authority authority;
     private Town town;
-    private Note note;
+    private Note note_;
     private ExecutorService executorService;
+
+    public BLO()
+    {
+        executorService = Executors.newCachedThreadPool();
+    }
 
     @Autowired
     public void setNoteDAO(NoteDAO noteDAO)
@@ -60,7 +72,7 @@ public class BLO
     @Autowired
     public void setNote(Note note)
     {
-        this.note = note;
+        this.note_ = note;
     }
 
     @Autowired
@@ -111,37 +123,57 @@ public class BLO
         this.town = town;
     }
 
-    public synchronized void saveUser(User usr) throws HibernateException
+    public synchronized void saveUser(final User usr) throws HibernateException
     {
         if (usr != null)
         {
-            usr.setEnabled(true);
-            userDAO.add(usr);
-            authority.setRole(Role.ROLE_USER);
-            authority.setUsername(usr.getEmail());
-            authorityDAO.add(authority);
+            executorService.execute(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    usr.setEnabled(true);
+                    userDAO.add(usr);
+                    authority.setRole(Role.ROLE_USER);
+                    authority.setUsername(usr.getEmail());
+                    authorityDAO.add(authority);
+                }
+            });
         }
     }
 
-    public void editUser(Long id, String firstName, String lastName, Long nt_id) throws HibernateException
+    public void editUser(final Long id, final String firstName, final String lastName, final Long nt_id) throws HibernateException
     {
         if (id != null)
         {
-            User editUser = userDAO.findByID(id);
-            editUser.setFirstName(firstName);
-            editUser.setLastName(lastName);
-            editUser.setNativeTown(nt_id);
-            userDAO.edit(editUser);
+            executorService.execute(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    User editUser = userDAO.findByID(id);
+                    editUser.setFirstName(firstName);
+                    editUser.setLastName(lastName);
+                    editUser.setNativeTown(nt_id);
+                    userDAO.edit(editUser);
+                }
+            });
         }
     }
 
     public void addConversation(Long... particiants)
     {
-
-        conversation.setParticiants(new HashSet<Long>());
-        conversation.addParticiant(1L);
-        conversation.addParticiant(2L);
-        conversationDAO.add(conversation);
+        executorService.execute(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                conversation.setParticiants(new HashSet<Long>());
+                conversation.addParticiant(1L);
+                conversation.addParticiant(2L);
+                conversationDAO.add(conversation);
+            }
+        });
     }
 
     public void sendMessage(Long user_id, Long conversation_id, String text)
@@ -149,13 +181,56 @@ public class BLO
 
     }
 
-    public void addNote(Note note)
+    public void addNote(final Note note, final String path)
     {
-        if (note != null)
+        final String user = SecurityContextHolder.getContext().getAuthentication().getName();
+        try
         {
-            noteDAO.add(note);
+
+            executorService.execute(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    Set<String> photos = new HashSet<>();
+                    if (note.getFiles() != null)
+                    {
+                        Path dir = Paths.get(path + user);
+                        if (!Files.exists(dir))
+                        {
+                            try
+                            {
+                                Files.createDirectory(dir);
+                            } catch (Exception e)
+                            {
+                                Logger.getAnonymousLogger().log(Level.SEVERE, "Failed to create dir", e);
+                            }
+                        }
+
+                        for (MultipartFile file : note.getFiles())
+                        {
+                            try
+                            {
+                                String photoPath = path + user + "/" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                                File saved = new File(photoPath);
+                                file.transferTo(saved);
+                                photos.add(photoPath.replace(path, "resources/usersphotos/"));
+                            } catch (IOException ioe)
+                            {
+                                Logger.getAnonymousLogger().log(Level.SEVERE, "Failed to save files", ioe);
+                            }
+                        }
+                    }
+
+                    note.setPhotos(photos);
+                    note.setUser(user);
+                    noteDAO.add(note);
+                }
+            });
+        } catch (Exception e)
+        {
+            Logger.getAnonymousLogger().log(Level.SEVERE, "Failed to save files", e);
         }
-        throw new NullPointerException();
     }
 
     public void addTown() throws ConcurrencyFailureException, IOException, HibernateException
@@ -163,13 +238,10 @@ public class BLO
         TaskerDB task = new TaskerDB(town, townDAO);
         executorService = Executors.newCachedThreadPool();
         executorService.execute(task);
-        executorService.shutdown();
     }
 
-    public List<Town> getTowns()
+    public List<Town> getTowns() throws InterruptedException, ExecutionException
     {
-        List<Town> townsList = null;
-        executorService = Executors.newCachedThreadPool();
         Future<List<Town>> result = executorService.submit(new Callable<List<Town>>()
         {
             @Override
@@ -178,13 +250,35 @@ public class BLO
                 return townDAO.findAll();
             }
         });
-        try
-        {
-            townsList = result.get();
-        } catch (Exception e)
-        {
-            Logger.getAnonymousLogger().log(Level.SEVERE, "Failed to get list of towns", e);
-        }
-        return townsList;
+        return result.get();
+
     }
+
+    public List<Note> getNotes(final int numberOfNotes) throws InterruptedException, ExecutionException
+    {
+        Future<List<Note>> result = executorService.submit(new Callable<List<Note>>()
+        {
+            @Override
+            public List<Note> call() throws Exception
+            {
+                return noteDAO.findLastNotes(numberOfNotes);
+            }
+        });
+        return result.get();
+
+    }
+
+    public List<Note> getNotes(final String username, final int skip) throws InterruptedException, ExecutionException
+    {
+        Future<List<Note>> result = executorService.submit(new Callable<List<Note>>()
+        {
+            @Override
+            public List<Note> call() throws Exception
+            {
+                return noteDAO.findByUsername(username, skip);
+            }
+        });
+        return result.get();
+    }
+
 }

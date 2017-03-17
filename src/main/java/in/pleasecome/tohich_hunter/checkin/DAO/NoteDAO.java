@@ -23,7 +23,7 @@ public interface NoteDAO extends EntityDAO<Note>
     @Override
     public Note findByID(Long id);
     
-    public List<Note> findByUserID(Long id);
+    public List<Note> findByUsername(String id, int skip);
     
     public List<Note> findLastNotes(int numberOfNotes);
 }

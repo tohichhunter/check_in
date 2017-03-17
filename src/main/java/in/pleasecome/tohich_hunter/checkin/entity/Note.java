@@ -7,14 +7,19 @@ package in.pleasecome.tohich_hunter.checkin.entity;
 
 import java.io.Serializable;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -34,18 +39,21 @@ public class Note implements Serializable
     private String name;
     @Column(name = "text")
     private String text;
-    @ElementCollection( targetClass = String.class )
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
     @Column(name = "photos")
     private Set<String> photos;
+    @Transient
+    private Set<MultipartFile> files;
     @Column(name = "location")
     private Long location;
-    @Column(name = "user")
-    private Long user;
-    
+    @Column(name = "username")
+    private String username;
+
     public Note()
     {
-        
+
     }
+
     public Long getId()
     {
         return id;
@@ -120,20 +128,40 @@ public class Note implements Serializable
         this.location = location;
     }
 
-    public Long getUser()
+    public String getUser()
     {
-        return user;
+        return username;
     }
 
-    public void setUser(Long user)
+    public void setUser(String username)
     {
-        this.user = user;
+        this.username = username;
+    }
+
+    public Set<MultipartFile> getFiles()
+    {
+        return files;
+    }
+
+    public void setFiles(Set<MultipartFile> files)
+    {
+        this.files = files;
+    }
+
+    public String getUsername()
+    {
+        return username;
+    }
+
+    public void setUsername(String username)
+    {
+        this.username = username;
     }
 
     @Override
     public String toString()
     {
-        return "in.pleasecome.tohich_hunter.checkin.entity.Note[ id=" + id + " ]";
+        return "Note{" + "id=" + id + ", name=" + name + ", photos=" + photos + ", files=" + files + ", location=" + location + ", username=" + username + '}';
     }
-    
+
 }

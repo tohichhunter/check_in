@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!-- was: <?xml version="1.0" encoding="UTF-8"?> -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:security="http://www.springframework.org/schema/security"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
@@ -12,69 +11,45 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.4.0.xsd
-        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd">
-      <context:component-scan base-package="in.pleasecome.tohich_hunter.checkin" />
-       <context:component-scan base-package="in.pleasecome.tohich_hunter.checkin.entity" />
-        <context:component-scan base-package="in.pleasecome.tohich_hunter.checkin.DAO" />
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.4.0.xsd">
+    <context:component-scan base-package="in.pleasecome.tohich_hunter.checkin" />
+    <context:component-scan base-package="in.pleasecome.tohich_hunter.checkin.entity" />
+    <context:component-scan base-package="in.pleasecome.tohich_hunter.checkin.DAO" />
     
-<bean id="dataSource"
-    class="org.springframework.jdbc.datasource.DriverManagerDataSource"
-    p:driverClassName="org.postgresql.Driver"
-    p:url="jdbc:postgresql://localhost:5432/check_in"
-    p:username="postgres"
-    p:password="ilovedicks"/>
-<bean id="sessionFactory"
-		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />
+    <bean id="multipartResolver" name="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+               <property name="maxUploadSize" value="20848820"/>
+    </bean>
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+          p:driverClassName="org.postgresql.Driver"
+          p:url="jdbc:postgresql://localhost:5432/check_in"
+          p:username="postgres"
+          p:password="ilovedicks"/>
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
 		
-		<property name="configLocation" value="classpath:hibernate.cfg.xml" />
-	</bean>
-	<bean id="userHibernateDao" class="in.pleasecome.tohich_hunter.checkin.DAO.UserDAOImpl">
-		<property name="sessionFactory" ref="sessionFactory" />
-                <property name="passwordEncoder" ref="bcryptEncoder" />
-	</bean>
-        <bean id="conversationHibernateDao" class="in.pleasecome.tohich_hunter.checkin.DAO.ConversationDAOImpl">
-		<property name="sessionFactory" ref="sessionFactory" />
-	</bean>
-        <bean id="authorityHibernateDao" class="in.pleasecome.tohich_hunter.checkin.DAO.AuthorityDAOImpl">
-		<property name="sessionFactory" ref="sessionFactory" />
-	</bean>
-        <bean id="townHibernateDao" class="in.pleasecome.tohich_hunter.checkin.DAO.TownDAOImpl">
-		<property name="sessionFactory" ref="sessionFactory" />
-	</bean>
-        <bean id="noteHibernateDao" class="in.pleasecome.tohich_hunter.checkin.DAO.NoteDAOImpl">
-		<property name="sessionFactory" ref="sessionFactory" />
-	</bean>
-	<tx:annotation-driven/>
-	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory"/>
-	</bean>
-        
-        
-        
-        <security:http auto-config="true" use-expressions="true">
-            <security:intercept-url  pattern="/register" access="hasRole('ROLE_ANONYMOUS')" />
-            <security:intercept-url  pattern="/locations" access="hasRole('ROLE_USER')" />
-            <security:intercept-url  pattern="/mypage" access="hasRole('ROLE_USER')" />
-            <security:intercept-url  pattern="/edit" access="hasRole('ROLE_USER')" />
-            <security:form-login login-page="/login" 
-                default-target-url="/mypage" 
-                login-processing-url="/j_spring_security_check"
-                authentication-failure-url="/login" 
-                username-parameter="j_username"
-                password-parameter="j_password"/>
-            <security:remember-me remember-me-parameter="_spring_security_remember_me"/>
-            <security:csrf disabled="false"/>
-            <security:logout logout-url="/logout"
-                logout-success-url="/index" />
-        </security:http>
-        
-    <security:authentication-manager>
-        <security:authentication-provider>
-            <security:password-encoder hash="bcrypt"/>
-            <security:jdbc-user-service data-source-ref="dataSource"/>
-	</security:authentication-provider>
-    </security:authentication-manager>
- <bean id="bcryptEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+        <property name="configLocation" value="classpath:hibernate.cfg.xml" />
+    </bean>
+    <bean id="userHibernateDao" class="in.pleasecome.tohich_hunter.checkin.DAO.UserDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+        <property name="passwordEncoder" ref="bcryptEncoder" />
+    </bean>
+    <bean id="conversationHibernateDao" class="in.pleasecome.tohich_hunter.checkin.DAO.ConversationDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <bean id="authorityHibernateDao" class="in.pleasecome.tohich_hunter.checkin.DAO.AuthorityDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <bean id="townHibernateDao" class="in.pleasecome.tohich_hunter.checkin.DAO.TownDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <bean id="noteHibernateDao" class="in.pleasecome.tohich_hunter.checkin.DAO.NoteDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <tx:annotation-driven/>
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>        
+    <bean id="bcryptEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
 </beans>
