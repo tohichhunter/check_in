@@ -6,6 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -24,7 +25,18 @@
                 integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" 
         crossorigin="anonymous"></script>
         <title>Conversation</title>
+        <style>
+            .text,.name{
+                width: 100%; border-radius: 3px; color: #3b364c; background-color: #fcf376;
+            }   
 
+            .scrollable{
+                background-color: whitesmoke; border-radius: 10px;
+            }
+            .time{
+                color: #2580a8;
+            }
+        </style>
     </head>
     <body >
         <div class="container">
@@ -52,21 +64,47 @@
 
             <form:form id="logout-form" action="logout" method="POST">
             </form:form>
-            <!-- Main component for a primary marketing message or call to action -->
+
             <div class="jumbotron">
                 <h2>Conversation page</h2>
+                <div id="scroll" class="scrollable" style="overflow-y: scroll; height:400px;">
+                    <c:set var="msglist" value="${command.getMessages()}"/>
+                    <c:forEach items="${msglist}" varStatus="i">
+                        <div class="glyphicon" style="border: 1px solid; border-radius: 10px">
+                            <table>
+                                <th>${msglist[i.index].sender}</th>
+                                <tr class="text">
+                                    <td>${msglist[i.index].text}</td>
+                                </tr>
+                                <tr class="time">
+                                    <td>${msglist[i.index].addtime}</td>
+                                </tr>
+                            </table><br/>
+                        </div>
+                    </c:forEach>
 
+                </div>
+                <div>
+                    <br/>
 
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vulputate imperdiet felis, nec gravida nunc euismod sit amet. Vestibulum finibus, lectus et ultricies dapibus, eros eros dictum diam, in pellentesque sem mi porta massa. Vivamus tempus tempor massa. Etiam ultricies lacus ac egestas vulputate. Fusce euismod at orci eu egestas. Aliquam dignissim massa enim, nec pellentesque elit pulvinar eleifend. Morbi faucibus sem nec ante porta viverra. Mauris ultricies malesuada est, a viverra arcu posuere in. Phasellus eu enim dapibus, sollicitudin tellus vel, ultrices dui. Nam at tincidunt ante, et rutrum libero. Morbi id lectus quis ante scelerisque varius. Ut erat sapien, semper eget libero ut, bibendum interdum massa. Vestibulum dignissim erat nec viverra fermentum.
-
-                Nulla varius ultricies erat in maximus. Sed tortor tellus, dictum at turpis eget, rhoncus posuere diam. Nam risus enim, placerat eu dui ut, viverra rutrum augue. Sed vestibulum placerat augue sollicitudin maximus. Etiam varius, metus suscipit posuere sagittis, justo purus malesuada ex, id ullamcorper nisl velit id orci. Aenean orci metus, aliquam quis nulla et, finibus feugiat nulla. Donec porttitor magna dictum ex tristique, ac pharetra diam ullamcorper. Cras vel consequat quam. Vivamus ultrices massa vitae turpis suscipit sollicitudin.
-
-                Sed posuere lacus sem, et bibendum turpis mollis vel. Morbi condimentum, nisi ut laoreet rutrum, enim purus consequat ante, vel sodales libero mauris ut nibh. Phasellus finibus ex et tempus bibendum. Sed tincidunt auctor semper. Suspendisse malesuada tortor ut augue tempor volutpat. Duis ac dictum ipsum. Nulla sed purus ut tellus tristique suscipit. Aliquam rutrum vulputate nunc in tristique. Praesent pretium dictum eros vitae ultricies. Duis vitae porttitor elit. Vestibulum lorem ante, fermentum non feugiat vehicula, ultricies nec orci. Integer pharetra nisi eget faucibus dictum. Ut feugiat leo nec orci convallis pharetra. Morbi elementum lobortis ullamcorper.
-
-                Donec sagittis porttitor sem, id luctus ex accumsan in. Nulla tincidunt eu sapien eget convallis. Donec in facilisis nulla. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque metus mi, bibendum sed ultrices vel, volutpat sit amet enim. Maecenas metus lacus, rutrum eu nulla nec, maximus rutrum nulla. Vestibulum urna augue, dapibus hendrerit nisi sed, laoreet maximus erat. Pellentesque nec varius diam. Aliquam volutpat at purus eget congue. Morbi molestie maximus lacus at facilisis. Proin egestas ut sapien eget cursus. Phasellus tincidunt consequat est, ut imperdiet libero posuere ut.
-
-                Proin eleifend enim a arcu consectetur aliquam. Proin ac pretium lorem, at efficitur orci. Mauris eget leo et nulla ullamcorper placerat. Vivamus non vulputate nisl. Fusce pharetra, velit et tincidunt pulvinar, magna massa semper massa, non gravida nisl est eget mi. Nullam rutrum elementum scelerisque. Nunc elit justo, commodo non tellus eu, mattis volutpat tortor. Nam porttitor dignissim porta. Aliquam venenatis nibh euismod imperdiet molestie. Phasellus consectetur euismod dui, porttitor lobortis quam ornare et. Praesent auctor purus urna, et iaculis purus commodo vitae. Duis ac quam id justo volutpat vestibulum. Integer malesuada urna quis rhoncus rhoncus. 
+                    <table style="width:100%">
+                        <tr>
+                            <td>
+                                <form:form commandName="command" id ="newMsg">
+                                    <textarea class="text" id ="msgTxt" type="textarea" placeholder="Message text here" 
+                                              style="height: 50px; resize: none;">
+                                    </textarea> 
+                                    <form:input id="convName" path="conversationName" type="hidden" />
+                                </form:form>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary" onclick="addMsg();">Send</button>
+                            </td>
+                        </tr>
+                    </table>             
+                </div>
             </div>
+
 
         </div> <!-- /container -->
 
@@ -79,6 +117,24 @@
         <script src="https://getbootstrap.com/dist/js/bootstrap.min.js"></script>
         <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
         <script src="https://getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script>
+        <script>
+                                    function addMsg() {
+                                        var txt = $('#msgTxt').val();
+                                        var cvrs = $('#convName').val();
+                                        var cmd = {txt: txt, conversation: cvrs};
+                                        $.ajax({
+                                            url: 'addMessage?${_csrf.parameterName}=${_csrf.token}',
+                                            type: "POST",
+                                            data: cmd,
+                                            success: function (data) {
+                                                alert("Message added" + data);
+                                            },
+                                            error: function () {
+                                                alert("Error");
+                                            }
+                                        });
+                                        $('#msgTxt').val(cnvrs);
+                                    }
+        </script>
     </body>
-</body>
 </html>

@@ -37,6 +37,7 @@ crossorigin="anonymous"></script>
           <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
               <li><a href="mypage"><img src="resources/img/user.png" width="50px"></a></li>
+              <li><a href="userlist"><img src="resources/img/users.png" width="50px"></a></li>
               <li><a href="locations"><img src="resources/img/250_location_logo.png" width="50px"></a></li>
               <li><a href="conversations"><img src="resources/img/messages.png" width="50px"></a></li>
               <li><a href="edit"><img src="resources/img/settings.png" width="50px"></a></li>

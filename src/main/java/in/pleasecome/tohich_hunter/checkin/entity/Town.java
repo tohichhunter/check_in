@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 public class Town implements Serializable
 {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 2943897388593076936L;    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

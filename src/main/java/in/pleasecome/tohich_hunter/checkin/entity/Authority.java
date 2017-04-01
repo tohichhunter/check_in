@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 public class Authority implements Serializable
 {
 
-    private static final long serialVersionUID = 6L;
+    private static final long serialVersionUID = -4315005307369096787L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

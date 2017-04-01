@@ -6,20 +6,18 @@
 package in.pleasecome.tohich_hunter.checkin.DAO;
 
 import in.pleasecome.tohich_hunter.checkin.entity.Conversation;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import org.hibernate.FlushMode;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.hibernate.Query;
 import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author toxa
  */
-
 public class ConversationDAOImpl extends HibernateDaoSupport implements ConversationDAO
 {
 
@@ -51,30 +49,57 @@ public class ConversationDAOImpl extends HibernateDaoSupport implements Conversa
     @Transactional(readOnly = true)
     public Conversation findByID(Long id)
     {
-        Object result=getHibernateTemplate().get(Conversation.class, id);
-        if(result!=null)
+        Object result = getHibernateTemplate().get(Conversation.class, id);
+        if (result != null)
         {
-            return (Conversation)result;
+            return (Conversation) result;
         }
         throw new NullPointerException();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Conversation> findByUserID(Long id)
+    public List<Conversation> findByUsername(String username)
     {
-        List<Long> result=(List<Long>)(Object)getHibernateTemplate().find("select conversations from users where id = ?", id);
-        if(result!=null)
+        Query query = getSessionFactory().getCurrentSession()
+                .createQuery("FROM in.pleasecome.tohich_hunter.checkin.entity.Conversation");
+        List<Conversation> list = new LinkedList<>(query.list());
+        if (list != null)
         {
-            List<Conversation> conversations = new LinkedList<>();
-            for(Long conversationID: result)
+            List<Conversation> result = new LinkedList<>();
+            for (Conversation l : list)
             {
-                conversations.add(getHibernateTemplate().get(Conversation.class, conversationID));
+                if (l.getParticiants().contains(username))
+                {
+                    result.add(l);
+                }
             }
-            return conversations;
+            return result;
         }
         throw new NullPointerException();
     }
-    
-    
+
+    @Override
+    public Conversation findByParticiants(String... particiants)
+    {
+        Query query = getSessionFactory().openSession()
+                .createQuery("FROM in.pleasecome.tohich_hunter.checkin.entity.Conversation");
+        List<Conversation> list = new LinkedList<>(query.list());
+        if (list != null)
+        {
+            for (Conversation l : list)
+            {
+                if (l.getParticiants().size() == particiants.length)
+                {
+                    if (l.getParticiants().containsAll(Arrays.asList(particiants)))
+                    {
+                        return l;
+                    }
+                }
+            }
+            return null;
+        }
+        throw new NullPointerException();
+    }
+
 }

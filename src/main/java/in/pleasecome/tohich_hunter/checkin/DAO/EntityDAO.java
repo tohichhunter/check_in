@@ -5,8 +5,6 @@
  */
 package in.pleasecome.tohich_hunter.checkin.DAO;
 
-import java.util.List;
-
 /**
  *
  * @author toxa

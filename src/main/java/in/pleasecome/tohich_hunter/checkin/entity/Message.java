@@ -6,32 +6,38 @@
 package in.pleasecome.tohich_hunter.checkin.entity;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author toxa
  */
 @Entity
+@Component
+@Table(name = "messages")
 public class Message implements Serializable
 {
 
-    private static final long serialVersionUID = 5L;
+    private static final long serialVersionUID = 3467824274293913629L;    
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long conversationId;
-    private User sender;
+    @Column(name = "conversation_name")
+    private String conversationName;
+    @Column(name = "sender")
+    private String sender;
+    @Column(name = "text")
     private String text;
-    private Long time;
+    @Column(name = "addtime")
+    private Timestamp addtime;
 
-    public Message()
-    {
-        
-    }
     public Long getId()
     {
         return id;
@@ -42,22 +48,22 @@ public class Message implements Serializable
         this.id = id;
     }
 
-    public Long getConversationId()
+    public String getConversationName()
     {
-        return conversationId;
+        return conversationName;
     }
 
-    public void setConversationId(Long conversationId)
+    public void setConversationName(String conversationName)
     {
-        this.conversationId = conversationId;
+        this.conversationName = conversationName;
     }
 
-    public User getSender()
+    public String getSender()
     {
         return sender;
     }
 
-    public void setSender(User sender)
+    public void setSender(String sender)
     {
         this.sender = sender;
     }
@@ -72,14 +78,14 @@ public class Message implements Serializable
         this.text = text;
     }
 
-    public Long getTime()
+    public Timestamp getAddtime()
     {
-        return time;
+        return addtime;
     }
 
-    public void setTime(Long time)
+    public void setAddtime(Timestamp addtime)
     {
-        this.time = time;
+        this.addtime = addtime;
     }
 
     @Override
@@ -92,26 +98,19 @@ public class Message implements Serializable
 
     @Override
     public boolean equals(Object object)
-    {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+    {        
         if (!(object instanceof Message))
         {
             return false;
         }
         Message other = (Message) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)))
-        {
-            return false;
-        }
-        return true;
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
     }
 
     @Override
     public String toString()
     {
-        return "Message{" + "id=" + id + ", conversationId=" + conversationId + ", sender=" + sender + ", time=" + time + '}';
+        return "Message{" + "id=" + id + ", conversationId=" + conversationName + ", sender=" + sender + ", time=" + addtime + '}';
     }
 
-   
-    
 }

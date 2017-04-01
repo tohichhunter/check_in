@@ -8,6 +8,7 @@ package in.pleasecome.tohich_hunter.checkin.DAO;
 import in.pleasecome.tohich_hunter.checkin.entity.User;
 import java.util.List;
 import org.hibernate.FlushMode;
+import org.hibernate.Query;
 import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +62,14 @@ public class UserDAOImpl extends HibernateDaoSupport implements UserDAO
     public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder)
     {
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> findAll()
+    {
+        Query query = getSessionFactory().getCurrentSession().createQuery("FROM in.pleasecome.tohich_hunter.checkin.entity.User");
+        return (List<User>)(Object) query.list();
     }
 
    

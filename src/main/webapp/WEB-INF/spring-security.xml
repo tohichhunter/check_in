@@ -19,6 +19,7 @@
         <intercept-url  pattern="/locations" access="hasRole('ROLE_USER')" />
         <intercept-url  pattern="/mypage" access="hasRole('ROLE_USER')" />
         <intercept-url  pattern="/edit" access="hasRole('ROLE_USER')" />
+        <intercept-url  pattern="/conversation*" access="hasRole('ROLE_USER')" />
         <form-login login-page="/login" 
                     default-target-url="/mypage" 
                     login-processing-url="/j_spring_security_check"

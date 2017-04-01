@@ -6,6 +6,7 @@
 package in.pleasecome.tohich_hunter.checkin.DAO;
 
 import in.pleasecome.tohich_hunter.checkin.entity.User;
+import java.util.List;
 
 /**
  *
@@ -21,4 +22,6 @@ public interface UserDAO extends EntityDAO<User>
     public void delete(User user);
     @Override
     public User findByID(Long id);
+    
+    List<User> findAll();
 }

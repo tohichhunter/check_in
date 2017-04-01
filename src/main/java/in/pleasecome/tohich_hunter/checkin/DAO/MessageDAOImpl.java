@@ -59,7 +59,7 @@ public class MessageDAOImpl extends HibernateDaoSupport implements MessageDAO
     @Transactional(readOnly = true)
     public List<Message> findByConversationID(Long id)
     {
-         List<Long> result=(List<Long>)(Object)getHibernateTemplate().find("select id from messages where conversationID = ?", id);
+         List<Long> result=(List<Long>)(Object)getHibernateTemplate().find("select id from messages where conversation_id = ?", id);
         if(result!=null)
         {
             List<Message> messages = new LinkedList<>();

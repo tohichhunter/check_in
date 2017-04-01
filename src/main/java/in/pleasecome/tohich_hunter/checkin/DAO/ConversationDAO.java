@@ -23,5 +23,7 @@ public interface ConversationDAO extends EntityDAO<Conversation>
     @Override
     public Conversation findByID(Long id);
     
-    public List<Conversation> findByUserID(Long id);
+    public List<Conversation> findByUsername(String username);
+    
+    public Conversation findByParticiants(String... particiants);
 }

@@ -6,9 +6,9 @@
 package in.pleasecome.tohich_hunter.checkin.entity;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -16,6 +16,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import org.springframework.stereotype.Component;
@@ -30,47 +31,48 @@ import org.springframework.stereotype.Component;
 public class Conversation implements Serializable
 {
 
-    private static final long serialVersionUID = 4L;
+    private static final long serialVersionUID = 4577926355113407737L;    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @ElementCollection(targetClass = Long.class, fetch = FetchType.LAZY)
-    @Column(name = "messages")
-    private List<Long> messages;
-    
-    @ElementCollection(targetClass = Long.class, fetch = FetchType.LAZY)
+    private Long conversation_id;
+
+    @Column(name = "conversation_name")
+    private String conversationName;
+
+    @JoinColumn(name = "messages.conversation_name")
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = Message.class)
+    private List<Message> messages = new LinkedList<>();
+
+    @ElementCollection(targetClass = Long.class, fetch = FetchType.EAGER)
     @Column(name = "particiants")
-    private Set particiants;
-    
-    
+    private Set<String> particiants;
 
     public Long getId()
     {
-        return id;
+        return conversation_id;
     }
 
     public void setId(Long id)
     {
-        this.id = id;
+        this.conversation_id = id;
     }
 
-    public Set<Long> getParticiants()
+    public Set<String> getParticiants()
     {
         return particiants;
     }
 
-    public void setParticiants(Set<Long> particiants)
+    public void setParticiants(Set<String> particiants)
     {
         this.particiants = particiants;
     }
 
-    public List<Long> getMessages()
+    public List<Message> getMessages()
     {
         return messages;
     }
 
-    public void setMessages(List<Long> messages)
+    public void setMessages(List<Message> messages)
     {
         this.messages = messages;
     }
@@ -79,27 +81,39 @@ public class Conversation implements Serializable
     public int hashCode()
     {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (conversation_id != null ? conversation_id.hashCode() : 0);
         return hash;
     }
-    public void addParticiant(Long user)
+
+    public void addParticiant(String user)
     {
         particiants.add(user);
     }
-    public void addMessage(Long message)
+
+    public void addMessage(Message message)
     {
         messages.add(message);
     }
+
+    public String getConversationName()
+    {
+        return conversationName;
+    }
+
+    public void setConversationName(String conversationName)
+    {
+        this.conversationName = conversationName;
+    }
+
     @Override
     public boolean equals(Object object)
-    {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+    {        
         if (!(object instanceof Conversation))
         {
             return false;
         }
         Conversation other = (Conversation) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)))
+        if ((this.conversation_id == null && other.conversation_id != null) || (this.conversation_id != null && !this.conversation_id.equals(other.conversation_id)))
         {
             return false;
         }
@@ -109,9 +123,9 @@ public class Conversation implements Serializable
     @Override
     public String toString()
     {
-        return "Conversation{" + "id=" + id + ", particiants=" + particiants + '}';
+        return "Conversation{" + "conversation_id=" + conversation_id + ", conversationName=" + conversationName + ", particiants=" + particiants + '}';
     }
 
     
-    
+
 }

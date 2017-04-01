@@ -53,6 +53,7 @@ Contributor(s):
     <mapping class="in.pleasecome.tohich_hunter.checkin.entity.User"/>
     <mapping class="in.pleasecome.tohich_hunter.checkin.entity.Authority"/>
     <mapping class="in.pleasecome.tohich_hunter.checkin.entity.Conversation"/>
+    <mapping class="in.pleasecome.tohich_hunter.checkin.entity.Message"/>
     <mapping class="in.pleasecome.tohich_hunter.checkin.entity.Town"/>
     <mapping class="in.pleasecome.tohich_hunter.checkin.entity.Note"/>
   </session-factory>

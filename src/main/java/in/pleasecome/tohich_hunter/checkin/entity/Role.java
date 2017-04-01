@@ -11,6 +11,6 @@ package in.pleasecome.tohich_hunter.checkin.entity;
  */
 public enum Role
 {
-    ROLE_USER,ROLE_ADMIN;
+    ROLE_USER,ROLE_ADMIN,ROLE_ANONYMOUS;
       
 }

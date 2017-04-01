@@ -38,6 +38,9 @@
     <bean id="conversationHibernateDao" class="in.pleasecome.tohich_hunter.checkin.DAO.ConversationDAOImpl">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
+    <bean id="messageHibernateDao" class="in.pleasecome.tohich_hunter.checkin.DAO.MessageDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
     <bean id="authorityHibernateDao" class="in.pleasecome.tohich_hunter.checkin.DAO.AuthorityDAOImpl">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
