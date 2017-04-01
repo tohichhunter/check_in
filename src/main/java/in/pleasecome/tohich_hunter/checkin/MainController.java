@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package in.pleasecome.tohich_hunter.checkin;
 
 import in.pleasecome.tohich_hunter.checkin.entity.Conversation;
@@ -10,10 +5,7 @@ import in.pleasecome.tohich_hunter.checkin.entity.Message;
 import in.pleasecome.tohich_hunter.checkin.entity.Note;
 import in.pleasecome.tohich_hunter.checkin.entity.Town;
 import in.pleasecome.tohich_hunter.checkin.entity.User;
-import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -29,8 +21,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- *<p>MainController</p>
- * Class, designed to control HTTP requests and invoke appropriate business logic methods.
+ * <p>
+ * MainController</p>
+ * Class, designed to control HTTP requests and invoke appropriate business
+ * logic methods.
+ *
  * @author Anton Rumiantsev
  */
 @Controller
@@ -42,13 +37,16 @@ public class MainController
      */
     private final Logger logger = Logger.getLogger(MainController.class);
     /**
-     * {@link in.pleasecome.tohich_hunter.checkin.BLO Business logic object}, on which invokes business methods.
+     * {@link in.pleasecome.tohich_hunter.checkin.BLO Business logic object}, on
+     * which invokes business methods.
      */
     private BLO blo;
 
     /**
      * Handles "index" request, return index.jsp page.
-     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView} with specified view info
+     *
+     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView}
+     * with specified view info
      */
     @RequestMapping("/index")
     public ModelAndView indexPage()
@@ -57,8 +55,11 @@ public class MainController
     }
 
     /**
-     * Handles "userlist" request, returns userlist.jsp page with loaded registered users list.
-     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView} with specified view info
+     * Handles "userlist" request, returns userlist.jsp page with loaded
+     * registered users list.
+     *
+     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView}
+     * with specified view info
      */
     @RequestMapping(value = "/userlist")
     public ModelAndView userlistPage()
@@ -75,9 +76,12 @@ public class MainController
     }
 
     /**
-     * Handles requests, appropriate to "mypage*" mask. Returns mypage.jsp page with user notes loaded.
+     * Handles requests, appropriate to "mypage*" mask. Returns mypage.jsp page
+     * with user notes loaded.
+     *
      * @param request from client side
-     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView} with specified view info
+     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView}
+     * with specified view info
      */
     @RequestMapping(value = "/mypage*", method = RequestMethod.GET)
     public ModelAndView myPage(HttpServletRequest request)
@@ -102,7 +106,9 @@ public class MainController
 
     /**
      * Handles "edit" request, returns edit.jsp page.
-     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView} with specified view info
+     *
+     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView}
+     * with specified view info
      */
     @RequestMapping("/edit")
     public ModelAndView editPage()
@@ -112,7 +118,9 @@ public class MainController
 
     /**
      * Handles "admin" request, returns admin.jsp page.
-     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView} with specified view info
+     *
+     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView}
+     * with specified view info
      */
     @RequestMapping("/admin")
     public ModelAndView adminPage()
@@ -129,10 +137,10 @@ public class MainController
     }
 
     /**
-     * Handles request, appropriate to "addMessage*" mask, 
-     * creates and modifies {@link in.pleasecome.tohich_hunter.checkin.entity.Message Message}
-     * and delegates message saving to BLO.
-     * Returns string message to requester.
+     * Handles request, appropriate to "addMessage*" mask, creates and modifies
+     * {@link in.pleasecome.tohich_hunter.checkin.entity.Message Message} and
+     * delegates message saving to BLO. Returns string message to requester.
+     *
      * @param text of message
      * @param cvrs - name of conversation
      * @return string with info about process state
@@ -144,11 +152,10 @@ public class MainController
         if (text == null || cvrs == null)
         {
             return "BAD";
-        } else
-        if (text.trim().equals(""))
+        } else if (text.trim().equals(""))
         {
             return "EMPTY";
-        } 
+        }
         Message msg = new Message();
         msg.setConversationName(cvrs);
         msg.setText(text);
@@ -166,11 +173,13 @@ public class MainController
     }
 
     /**
-     * Handles requests, appropriate to "conversation_*" mask. 
-     * Tries to get {@link in.pleasecome.tohich_hunter.checkin.entity.Conversation Conversation}.
+     * Handles requests, appropriate to "conversation_*" mask. Tries to get
+     * {@link in.pleasecome.tohich_hunter.checkin.entity.Conversation Conversation}.
      * Returns conversation.jsp page.
+     *
      * @param request from client side
-     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView} with specified view info
+     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView}
+     * with specified view info
      */
     @RequestMapping("/conversation_*")
     public ModelAndView conversationPage(HttpServletRequest request)
@@ -191,7 +200,9 @@ public class MainController
 
     /**
      * Handles "conversation" request, returns conversations_list.jsp page.
-     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView} with specified view info
+     *
+     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView}
+     * with specified view info
      */
     @RequestMapping("/conversations")
     public ModelAndView conversationsListPage()
@@ -201,7 +212,9 @@ public class MainController
 
     /**
      * Handles "locations" request, returns locations.jsp page.
-     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView} with specified view info
+     *
+     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView}
+     * with specified view info
      */
     @RequestMapping("/locations")
     public ModelAndView locationsPage()
@@ -211,7 +224,9 @@ public class MainController
 
     /**
      * Handles "register" request, returns register.jsp page.
-     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView} with specified view info
+     *
+     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView}
+     * with specified view info
      */
     @RequestMapping(value = "/register")
     public ModelAndView registerPage()
@@ -221,7 +236,9 @@ public class MainController
 
     /**
      * Handles "login" request, returns login.jsp page.
-     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView} with specified view info
+     *
+     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView}
+     * with specified view info
      */
     @RequestMapping(value = "/login")
     public ModelAndView loginPage()
@@ -230,10 +247,14 @@ public class MainController
     }
 
     /**
-     * Handles "add_user" request, delegates saving process to business logic object.
-     * Returns either login.jsp page, in a case of successful transaction, or register.jsp page otherwise.
-     * @param usr - {@link in.pleasecome.tohich_hunter.checkin.entity.User User} object with defined properties
-     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView} with specified view info
+     * Handles "add_user" request, delegates saving process to business logic
+     * object. Returns either login.jsp page, in a case of successful
+     * transaction, or register.jsp page otherwise.
+     *
+     * @param usr - {@link in.pleasecome.tohich_hunter.checkin.entity.User User}
+     * object with defined properties
+     * @return {@link org.springframework.web.servlet.ModelAndView ModelAndView}
+     * with specified view info
      */
     @RequestMapping(value = "/add_user", method = RequestMethod.POST)
     public ModelAndView registerUser(@ModelAttribute("command") User usr)
@@ -250,10 +271,13 @@ public class MainController
     }
 
     /**
-     * Handles "addNote" request, gets absolute path of resources folder
-     * and pass it with Note object to appropriate business logic objects method.
+     * Handles "addNote" request, gets absolute path of resources folder and
+     * pass it with Note object to appropriate business logic objects method.
      * Returns command string, to redirect back to users page.
-     * @param note - {@link in.pleasecome.tohich_hunter.checkin.entity.Note Note} with defined properties
+     *
+     * @param note -
+     * {@link in.pleasecome.tohich_hunter.checkin.entity.Note Note} with defined
+     * properties
      * @param request - client side request
      * @return string with redirect command
      */
@@ -274,8 +298,9 @@ public class MainController
     }
 
     /**
-     * Handles "getTowns" request, tries to get list of all towns via business logic object.
-     * Returns converted to JSON list of towns.
+     * Handles "getTowns" request, tries to get list of all towns via business
+     * logic object. Returns converted to JSON list of towns.
+     *
      * @return list of towns, if any found, or empty list otherwise
      */
     @RequestMapping(value = "/getTowns")
@@ -293,7 +318,8 @@ public class MainController
     }
 
     /**
-     * Setter for business logic object, with Springs @autowired  annotation
+     * Setter for business logic object, with Springs @autowired annotation
+     *
      * @param blo - certain object of BLO type
      */
     @Autowired
